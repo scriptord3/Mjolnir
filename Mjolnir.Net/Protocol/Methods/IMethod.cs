@@ -5,8 +5,12 @@ using System.Text;
 
 namespace Mjolnir.Net.Protocol.Methods
 {
-    public interface IMethod
+    public interface IMethodIn
     {
         void Parse(Header header, byte[] data);
+    }
+
+    public interface IMethodOut
+    {
     }
 }

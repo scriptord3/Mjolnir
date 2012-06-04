@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mjolnir", "Mjolnir.csproj", "{9CF1CDFE-8BDC-4F38-B05E-99EA3DDD7AF9}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mjolnir", "Mjolnir\Mjolnir.csproj", "{9CF1CDFE-8BDC-4F38-B05E-99EA3DDD7AF9}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mjolnir.Net", "..\Mjolnir.Net\Mjolnir.Net.csproj", "{E29E3E4B-3DE2-43CD-AAF9-73E1B64442B0}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mjolnir.Net", "Mjolnir.Net\Mjolnir.Net.csproj", "{E29E3E4B-3DE2-43CD-AAF9-73E1B64442B0}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mjolnir.Static", "Mjolnir.Static\Mjolnir.Static.csproj", "{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +37,16 @@ Global
 		{E29E3E4B-3DE2-43CD-AAF9-73E1B64442B0}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
 		{E29E3E4B-3DE2-43CD-AAF9-73E1B64442B0}.Release|Mixed Platforms.Build.0 = Release|Any CPU
 		{E29E3E4B-3DE2-43CD-AAF9-73E1B64442B0}.Release|x86.ActiveCfg = Release|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}.Release|x86.ActiveCfg = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

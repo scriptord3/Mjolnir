@@ -1,0 +1,49 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+
+namespace Mjolnir.Static
+{
+    public enum ClientType
+    {
+        CLIENTTYPE_NONE = -0x1,
+        CLIENTTYPE_KOREAN = 0x0,
+        CLIENTTYPE_ENGLISH = 0x1,
+        CLIENTTYPE_SAKRAY = 0x2,
+        CLIENTTYPE_JAPAN = 0x3,
+        CLIENTTYPE_CHINA = 0x4,
+        CLIENTTYPE_TAIWAN = 0x5,
+        CLIENTTYPE_HONGKONG = 0x6,
+        CLIENTTYPE_THAI = 0x7,
+        CLIENTTYPE_LOCAL = 0x8,
+        CLIENTTYPE_JAPAN_SAKRAY = 0x9,
+        CLIENTTYPE_THAI_SAKRAY = 0xa,
+        CLIENTTYPE_TAIWAN_SAKRAY = 0xb,
+        CLIENTTYPE_INDONESIA = 0xc,
+        CLIENTTYPE_INDONESIA_SAKRAY = 0xd,
+        CLIENTTYPE_ENGLISH_SAKRAY = 0xe,
+        CLIENTTYPE_PHILIPPINE = 0xf,
+        CLIENTTYPE_MALAYSIA = 0x10,
+        CLIENTTYPE_SINGAPORE = 0x11,
+        CLIENTTYPE_PHILIPPINE_SAKRAY = 0x12,
+        CLIENTTYPE_THAI_FREE = 0x13,
+        CLIENTTYPE_GERMANY = 0x14,
+        CLIENTTYPE_INDIA = 0x15,
+        CLIENTTYPE_BRAZIL = 0x16,
+        CLIENTTYPE_AUSTRALIA = 0x17,
+        CLIENTTYPE_KOREAN_PK = 0x18,
+        CLIENTTYPE_RUSSIA = 0x19,
+        CLIENTTYPE_VIETNAM = 0x1a,
+        CLIENTTYPE_PHILIPPINE_PK = 0x1b,
+        CLIENTTYPE_JAPAN_PK = 0x1c,
+        CLIENTTYPE_THAI_PK = 0x1d,
+        CLIENTTYPE_CHILE = 0x1e,
+        CLIENTTYPE_FRANCE = 0x1f,
+        CLIENTTYPE_VIETNAM_PK = 0x20,
+        CLIENTTYPE_VIETNAM_SAKRAY = 0x21,
+        CLIENTTYPE_INDONESIA_PK = 0x22,
+        CLIENTTYPE_UAE = 0x23,
+        MAX_CLIENTTYPE = 0x24,
+    }
+}

@@ -31,13 +31,13 @@ namespace Mjolnir.Net.Protocol
         public static Header ParseFrom(byte[] data)
         {
             Header header = new Header();
-            header.MethodId = (uint)((data[0] << 8) | data[1]);
+            header.MethodId = (uint)((data[1] << 8) | data[0]);
             header.HeaderSize += 2;
 
             int size = Protocol.PacketLengthMgr.GetPacketLengthForMethodId(header.MethodId);
             if (size == -1)
             { 
-                header.Size = ((data[2] << 8) | data[3]);
+                header.Size = ((data[3] << 8) | data[2]);
                 header.HeaderSize += 2;
             }
 

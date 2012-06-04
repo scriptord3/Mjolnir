@@ -41,12 +41,19 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Protocol\Header.cs" />
+    <Compile Include="Protocol\Methods\CA\Login.cs" />
     <Compile Include="Protocol\Methods\IMethod.cs" />
     <Compile Include="Protocol\Methods\Method.cs" />
-    <Compile Include="Protocol\Methods\Notify_Chat.cs" />
+    <Compile Include="Protocol\Methods\ZC\Notify_Chat.cs" />
     <Compile Include="PacketLengthMgr.cs" />
     <Compile Include="RoNetBuffer.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Mjolnir.Static\Mjolnir.Static.csproj">
+      <Project>{CEFDD3C7-BAED-4D01-948D-8498B3AE4B61}</Project>
+      <Name>Mjolnir.Static</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

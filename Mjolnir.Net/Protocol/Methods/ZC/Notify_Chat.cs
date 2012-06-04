@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Mjolnir.Net.Protocol.Methods
+namespace Mjolnir.Net.Protocol.Methods.ZC
 {
-    [Method(methodId: 0x008d, size: MethodAttribute.packet_length_dynamic, name: "NOTIFY_CHAT")]
-    class Notify_Chat : IMethod
+    [Method(methodId: 0x008d, size: MethodAttribute.packet_length_dynamic, name: "ZC_NOTIFY_CHAT", direction: MethodAttribute.packetdirection.pd_in)]
+    public class Notify_Chat : IMethodIn
     {
         public void Parse(Header header, byte[] data)
         {
