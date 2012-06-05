@@ -45,10 +45,13 @@ namespace Mjolnir
                 x.Read(test, 0, (int)x.Length);
             }
             buffer.Append(test);
+
+            Console.WriteLine("Packet Parsers: " + Mjolnir.Net.Protocol.Methods.Method.Count());
             while (buffer.PacketAvaliable())
             {
                 var x = buffer.GetPacketHeader();
-                Console.Write("Header " + x.MethodId.ToString().PadLeft(5, Convert.ToChar(" ")) + ", 0x" + ((uint)x.MethodId).ToString("x4") + " ");
+                if (x.Size == -2)
+                    Console.Write("Header " + x.MethodId.ToString().PadLeft(5, Convert.ToChar(" ")) + ", 0x" + ((uint)x.MethodId).ToString("x4") + " ");
                 var d = buffer.GetPacketData((int)x.Size);
                 var m = Net.Protocol.Methods.Method.GetByID(x.MethodId);
                 if (m == null)
@@ -59,11 +62,13 @@ namespace Mjolnir
                 }
                 else
                 {
+                    /*
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.Write("parsed ");
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine(m.GetType().Name);
                     Console.ResetColor();
+                     * */
                 }
                 //m.Parse(x, d);
                 buffer.Consume();

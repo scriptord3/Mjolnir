@@ -48,6 +48,11 @@ namespace Mjolnir.Net.Protocol.Methods
             }
         }
 
+        public static int Count()
+        {
+            return ProvidedMethods.Count();
+        }
+
         public static IMethodIn GetByID(uint methodId)
         {
             return (from pair in ProvidedMethods let methodInfo = pair.Value where methodInfo.MethodId == methodId select Methods[pair.Key]).FirstOrDefault();
