@@ -34,10 +34,13 @@ namespace Mjolnir.Net.Protocol
             header.MethodId = (uint)((data[1] << 8) | data[0]);
             header.HeaderSize += 2;
 
-            int size = Protocol.PacketLengthMgr.GetPacketLengthForMethodId(header.MethodId);
-            if (size == -1)
+            header.Size = Protocol.PacketLengthMgr.GetPacketLengthForMethodId(header.MethodId);
+            if (header.Size == -1)
             { 
                 header.Size = ((data[3] << 8) | data[2]);
+                // workaroung
+                if (header.MethodId == 2222)
+                    header.Size = ((data[5] << 8) | data[4]);
                 header.HeaderSize += 2;
             }
 

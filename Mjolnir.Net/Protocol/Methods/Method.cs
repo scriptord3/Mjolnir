@@ -35,7 +35,6 @@ namespace Mjolnir.Net.Protocol.Methods
     {
         public readonly static Dictionary<Type, MethodAttribute> ProvidedMethods = new Dictionary<Type, MethodAttribute>();
         public readonly static Dictionary<Type, IMethodIn> Methods = new Dictionary<Type, IMethodIn>();
-        public readonly static Dictionary<Type, int> MethodsDataSize = new Dictionary<Type, int>();
 
         static Method()
         {
@@ -56,8 +55,7 @@ namespace Mjolnir.Net.Protocol.Methods
 
         public static int GetSize(uint methodId)
         {
-             return 0;
-            //return (from pair in MethodsDataSize let methodInfo = pair.Value where methodInfo.MethodId == methodId select Methods[pair.Key]).FirstOrDefault();
+            return (from pair in ProvidedMethods let methodInfo = pair.Value where methodInfo.MethodId == methodId select pair.Value.Size).FirstOrDefault();
         }
     }
 }
