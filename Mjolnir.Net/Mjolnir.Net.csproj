@@ -52,6 +52,8 @@
     <Compile Include="Protocol\Methods\ZC\Ack_ToUseSkill.cs" />
     <Compile Include="Protocol\Methods\ZC\Add_Member_To_Group2.cs" />
     <Compile Include="Protocol\Methods\ZC\Aid.cs" />
+    <Compile Include="Protocol\Methods\ZC\All_Quest_List.cs" />
+    <Compile Include="Protocol\Methods\ZC\All_Quest_Mission.cs" />
     <Compile Include="Protocol\Methods\ZC\Attack_Range.cs" />
     <Compile Include="Protocol\Methods\ZC\AutoRun_Skill.cs" />
     <Compile Include="Protocol\Methods\ZC\Broadcast.cs" />
@@ -105,6 +107,7 @@
     <Compile Include="Protocol\Methods\ZC\Req_TakeOff_Equip_Ack.cs" />
     <Compile Include="Protocol\Methods\ZC\Req_Wear_Equip_Ack.cs" />
     <Compile Include="Protocol\Methods\ZC\Say_Dialog.cs" />
+    <Compile Include="Protocol\Methods\ZC\Shortcut_Key_List_V2.cs" />
     <Compile Include="Protocol\Methods\ZC\Show_Image2.cs" />
     <Compile Include="Protocol\Methods\ZC\Skillinfo_List.cs" />
     <Compile Include="Protocol\Methods\ZC\Skillinfo_Update2.cs" />
