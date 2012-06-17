@@ -1,0 +1,5 @@
+C:\Users\Administrator\Documents\GitHub\Mjolnir\Mjolnir.Static\bin\Debug\Mjolnir.Static.dll
+C:\Users\Administrator\Documents\GitHub\Mjolnir\Mjolnir.Static\bin\Debug\Mjolnir.Static.pdb
+C:\Users\Administrator\Documents\GitHub\Mjolnir\Mjolnir.Static\obj\Debug\ResolveAssemblyReference.cache
+C:\Users\Administrator\Documents\GitHub\Mjolnir\Mjolnir.Static\obj\Debug\Mjolnir.Static.dll
+C:\Users\Administrator\Documents\GitHub\Mjolnir\Mjolnir.Static\obj\Debug\Mjolnir.Static.pdb

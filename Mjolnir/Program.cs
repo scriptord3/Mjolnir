@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Mjolnir.Net;
 using Mjolnir.Static;
-
+using Mjolnir.Static.Extensions;
 namespace Mjolnir
 {
     class Program
@@ -36,10 +36,9 @@ namespace Mjolnir
                 }
             }
             Net.RoNetBuffer buffer = new Net.RoNetBuffer();
-            // '008D' => ['public_chat', 'v a4 Z*', [qw(len ID message)]],
             byte[] test;// { 0x00, 0x8d, 0x00, 0x0a, 0x00, 0x00, 0x00, 0x01, 0x34, 0x36 };
 
-            using (var x = System.IO.File.Open("6258.bin", System.IO.FileMode.Open))
+            using (var x = System.IO.File.Open("paradise.bot", System.IO.FileMode.Open))
             {
                 test = new byte[(int)x.Length];
                 x.Read(test, 0, (int)x.Length);
@@ -54,6 +53,7 @@ namespace Mjolnir
                     Console.Write("Header " + x.MethodId.ToString().PadLeft(5, Convert.ToChar(" ")) + ", 0x" + ((uint)x.MethodId).ToString("x4") + " ");
                 var d = buffer.GetPacketData((int)x.Size);
                 var m = Net.Protocol.Methods.Method.GetByID(x.MethodId);
+                
                 if (m == null)
                 {
                     Console.ForegroundColor = ConsoleColor.DarkRed;
@@ -62,13 +62,11 @@ namespace Mjolnir
                 }
                 else
                 {
-                    /*
                     Console.ForegroundColor = ConsoleColor.DarkGreen;
                     Console.Write("parsed ");
                     Console.ForegroundColor = ConsoleColor.Cyan;
                     Console.WriteLine(m.GetType().Name);
                     Console.ResetColor();
-                     * */
                 }
                 //m.Parse(x, d);
                 buffer.Consume();
