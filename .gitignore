@@ -5,3 +5,5 @@
 /Mjolnir.Net/obj
 *.suo
 *.suo
+/Mjolnir.Static/bin
+/Mjolnir.Static/obj
