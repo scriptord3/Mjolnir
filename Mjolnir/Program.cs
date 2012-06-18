@@ -18,25 +18,6 @@ namespace Mjolnir
 
         static void Main(string[] args)
         {
-            //var xy = Net.Protocol.Methods.Method.GetByID(0x008d);
-            //var xyz = Net.Protocol.Methods.Method.GetSize(0x008d);
-
-            //struct PACKET_CA_LOGIN {
-            //  /* this+0x0 */ short PacketType
-            //  /* this+0x2 */ unsigned long Version
-            //  /* this+0x6 */ unsigned char[0x18] ID
-            //  /* this+0x1e */ unsigned char[0x18] Passwd
-            //  /* this+0x36 */ unsigned char clienttype
-            //}
-
-            //using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
-            //{
-            //    using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
-            //    {
-            //        login.WriteTo(bw);
-            //    }
-            //}
-
             string username = Config.Authentication.Config.Instance.Username;
             if (string.IsNullOrEmpty(username))
             {
@@ -56,8 +37,8 @@ namespace Mjolnir
                 password = password.Decrypt("MjOlNiR2012");
             }
 
-            Console.WriteLine("Select your server");
-            string server = GetConsoleInput("aRO:iRO:fRO", ConsoleOutputType.List, ConsoleInputReturnType.String);
+            //Console.WriteLine("Select your server");
+            //string server = GetConsoleInput("aRO:iRO:fRO", ConsoleOutputType.List, ConsoleInputReturnType.String);
 
             _buffer = new Net.RoNetBuffer();
             Thread connecthread = new Thread(Connect);
@@ -75,7 +56,26 @@ namespace Mjolnir
 
             while (1 == 1)
             {
-                Console.ReadLine();
+                string command = Console.ReadLine();
+                switch (command)
+                {
+                    case "relog":
+                        _buffer = new Net.RoNetBuffer();
+                        connecthread = new Thread(Connect);
+                        connecthread.Start();
+                        parseThread = new Thread(Parse);
+                        parseThread.Start();
+
+                        _packetQueue = new Queue<Net.Protocol.Methods.IMethodOut>();
+                        _packetQueue.Enqueue(Net.Protocol.Methods.CA.Login.CreateBuilder()
+                            .SetVersion(20)
+                            .SetId(username.ToCharArray())
+                            .SetPasswd(password.ToCharArray())
+                            .SetClienttype(Static.ClientType.CLIENTTYPE_FRANCE)
+                            .Build());
+                        break;
+
+                }
             }
         }
 
@@ -105,7 +105,7 @@ namespace Mjolnir
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine(m.GetType().Name);
                         Console.ResetColor();
-                        d.Hexdump();
+                        Console.WriteLine(d.Hexdump());
                         m.Parse(x, d);
                     }
                     _buffer.Consume();
@@ -126,7 +126,7 @@ namespace Mjolnir
                         using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
                         {
                             p.WriteTo(bw);
-                            Console.WriteLine(ms.ToArray().ToHexString());
+                            Console.WriteLine(ms.ToArray().Hexdump());
                             _socket.Send(ms.ToArray());
                         }
                     }
@@ -145,10 +145,12 @@ namespace Mjolnir
                 _socket = new System.Net.Sockets.Socket(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
                 try
                 {
-                    _socket.Connect("127.0.0.1", 6900);
+                    Console.WriteLine("Connecting to {0}:{1}", Config.Server.Config.Instance.IP, Config.Server.Config.Instance.Port);
+                    _socket.Connect(Config.Server.Config.Instance.IP, Config.Server.Config.Instance.Port);
                 }
-                catch (Exception ex)
+                catch
                 {
+
                     return;
                 }
 
@@ -179,7 +181,7 @@ namespace Mjolnir
 
                 } while (true);
             }
-            catch (Exception ex)
+            catch
             {
             }
             finally

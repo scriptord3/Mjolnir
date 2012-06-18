@@ -7,6 +7,19 @@ namespace Mjolnir.Static.Extensions
 {
     public static class ByteArrayExtensions
     {
+        public static string NullByteTerminatedString(this byte[] byteArray)
+        {
+            StringBuilder str = new StringBuilder();
+            for (int i = 0; i < byteArray.Length; i++)
+            {
+                if (byteArray[i] == 0x00)
+                    return str.ToString();
+                else
+                    str.Append(Convert.ToChar(byteArray[i]));
+            }
+            return str.ToString();
+        }
+
         public static string ToHexString(this byte[] byteArray)
         {
             return byteArray.Aggregate("", (current, b) => current + b.ToString("X2"));

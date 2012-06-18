@@ -47,9 +47,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Config\Authentication\AuthenticationConfig.cs" />
+    <Compile Include="Config\Authentication\Config.cs" />
     <Compile Include="Config\Config.cs" />
     <Compile Include="Config\ConfigurationManager.cs" />
+    <Compile Include="Config\Server\Config.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
