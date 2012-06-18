@@ -12,5 +12,6 @@ namespace Mjolnir.Net.Protocol.Methods
 
     public interface IMethodOut
     {
+        void WriteTo(System.IO.BinaryWriter output);
     }
 }

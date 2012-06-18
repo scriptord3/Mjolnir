@@ -66,7 +66,7 @@ namespace Mjolnir.Net.Protocol.Methods.CA
 
         public void WriteTo(System.IO.BinaryWriter output)
         {
-            output.Write(new byte[] { 0x00, 0x64 });
+            output.Write(new byte[] { 0x64, 0x00 });
 
             if (!hasVersion)
                 throw new Exception("Version not set!");

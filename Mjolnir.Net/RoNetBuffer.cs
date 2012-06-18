@@ -73,5 +73,14 @@ namespace Mjolnir.Net
             Array.Copy(newdata, 0, _data, _length, newdata.Length);
             _length = _length + newdata.Length;
         }
+
+        public void Append(byte[] newdata, int length)
+        {
+            if (_data.Length < _length + length)
+                Array.Resize(ref _data, _length + length);
+
+            Array.Copy(newdata, 0, _data, _length, length);
+            _length = _length + length;
+        }
     }
 }
