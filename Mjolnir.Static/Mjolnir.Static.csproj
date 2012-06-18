@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Extensions\ByteArrayExtensions.cs" />
     <Compile Include="Data.cs" />
+    <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

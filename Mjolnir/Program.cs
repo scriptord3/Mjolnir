@@ -5,6 +5,7 @@ using System.Text;
 using Mjolnir.Net;
 using Mjolnir.Static;
 using Mjolnir.Static.Extensions;
+
 namespace Mjolnir
 {
     class Program
@@ -36,10 +37,24 @@ namespace Mjolnir
             //    }
             //}
 
-            var username = GetConsoleInput("Please enter the username.", ConsoleOutputType.Message, ConsoleInputReturnType.String);
-            var password = GetConsoleInput("Please enter the password.", ConsoleOutputType.Message, ConsoleInputReturnType.String);
+            string username = Config.Authentication.Config.Instance.Username;
+            if (string.IsNullOrEmpty(username))
+            {
+                username = GetConsoleInput("Please enter the username.", ConsoleOutputType.Message, ConsoleInputReturnType.String);
+                Config.Authentication.Config.Instance.Username = username;
+                Config.Authentication.Config.Instance.Save();
+            }
+
+            string password = Config.Authentication.Config.Instance.Password.Decrypt("MjOlNiR2012");
+            if (string.IsNullOrEmpty(password))
+            {
+                password = GetConsoleInput("Please enter the password.", ConsoleOutputType.Message, ConsoleInputReturnType.String);
+                Config.Authentication.Config.Instance.Password = password.Encrypt("MjOlNiR2012");
+                Config.Authentication.Config.Instance.Save();
+            }
+
             Console.WriteLine("Select your server");
-            var server = GetConsoleInput("aRO:iRO:fRO", ConsoleOutputType.List, ConsoleInputReturnType.String);
+            string server = GetConsoleInput("aRO:iRO:fRO", ConsoleOutputType.List, ConsoleInputReturnType.String);
             Net.RoNetBuffer buffer = new Net.RoNetBuffer();
             byte[] test;
             using (var x = System.IO.File.Open("paradise.bot", System.IO.FileMode.Open))
