@@ -45,12 +45,15 @@ namespace Mjolnir
                 Config.Authentication.Config.Instance.Save();
             }
 
-            string password = Config.Authentication.Config.Instance.Password.Decrypt("MjOlNiR2012");
+            string password = Config.Authentication.Config.Instance.Password;
             if (string.IsNullOrEmpty(password))
             {
                 password = GetConsoleInput("Please enter the password.", ConsoleOutputType.Message, ConsoleInputReturnType.String);
                 Config.Authentication.Config.Instance.Password = password.Encrypt("MjOlNiR2012");
                 Config.Authentication.Config.Instance.Save();
+            } else
+            {
+                password = password.Decrypt("MjOlNiR2012");
             }
 
             Console.WriteLine("Select your server");
@@ -85,6 +88,7 @@ namespace Mjolnir
                     var x = _buffer.GetPacketHeader();
                     if (x.Size == -2)
                         Console.Write("Header " + x.MethodId.ToString().PadLeft(5, Convert.ToChar(" ")) + ", 0x" + ((uint)x.MethodId).ToString("x4") + " ");
+
                     var d = _buffer.GetPacketData((int)x.Size);
                     var m = Net.Protocol.Methods.Method.GetByID(x.MethodId);
 
@@ -101,6 +105,7 @@ namespace Mjolnir
                         Console.ForegroundColor = ConsoleColor.Cyan;
                         Console.WriteLine(m.GetType().Name);
                         Console.ResetColor();
+                        d.Hexdump();
                         m.Parse(x, d);
                     }
                     _buffer.Consume();

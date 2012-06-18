@@ -56,8 +56,6 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="config.ini">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>config.Designer.cs</LastGenOutput>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
