@@ -1,12 +1,16 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Net;
 using System.Threading;
+using System.IO;
+using System.Reflection;
 using Mjolnir.Net;
 using Mjolnir.Static;
 using Mjolnir.Static.Extensions;
+using Nini.Ini;
 
 namespace Mjolnir
 {
@@ -15,37 +19,85 @@ namespace Mjolnir
         private static Net.RoNetBuffer _buffer;
         private static System.Net.Sockets.Socket _socket;
         private static Queue<Net.Protocol.Methods.IMethodOut> _packetQueue;
+        private static Service _currentService;
+        private static Thread _connectThread;
+
+        private const string PasswordEncryptionKey = "MjOlNiR2012";
 
         static void Main(string[] args)
         {
+            StartConnect();
+
+            while (1 == 1)
+            {
+                string command = Console.ReadLine();
+                switch (command)
+                {
+                    case "relog":
+                        Relog(3);
+                        break;
+                    default:
+                        Logging.Trace("Unknown command {0}", Logging.LogLevel.Warning, command);
+                        break;
+                }
+            }
+        }
+
+        private static void StartConnect()
+        {
+            // reading the servers.ini for server configuration
+            var ConfigFile = string.Format("{0}/{1}", Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "Data\\servers.ini"); // the config file's location.
+            var Parser = new IniDocument(ConfigFile);
+            Dictionary<string, Service> serviceList = new Dictionary<string, Service>();
+            foreach (DictionaryEntry de in Parser.Sections)
+            {
+                IniSection section = (IniSection)de.Value;
+                Service s = new Service();
+                s.Name = de.Key.ToString();
+                s.IP = section.GetValue("ip");
+                s.Port = Convert.ToInt32(section.GetValue("port"));
+                serviceList.Add(de.Key.ToString(), s);
+            }
+
+            // if config.ini contains a valid server skip choosing a new one
+            string service = Config.Server.Config.Instance.Name;
+            if (string.IsNullOrEmpty(service) || !serviceList.ContainsKey(service))
+            {
+                var selectedService = ConsoleHelper.GetConsoleMenu<Service>("Select your service", serviceList);
+                _currentService = selectedService;
+                Config.Server.Config.Instance.Name = selectedService.Name;
+                Config.Server.Config.Instance.Save();
+            }
+            else
+            {
+                _currentService = serviceList[service];
+            }
+
+            // if config.ini contains a username skip asking for a new one
             string username = Config.Authentication.Config.Instance.Username;
             if (string.IsNullOrEmpty(username))
             {
-                username = GetConsoleInput("Please enter the username.", ConsoleOutputType.Message, ConsoleInputReturnType.String);
+                username = ConsoleHelper.GetConsoleString("Please enter the username");
                 Config.Authentication.Config.Instance.Username = username;
                 Config.Authentication.Config.Instance.Save();
             }
 
+            // if config.ini contains a password skip asking for a new one
             string password = Config.Authentication.Config.Instance.Password;
             if (string.IsNullOrEmpty(password))
             {
-                password = GetConsoleInput("Please enter the password.", ConsoleOutputType.Message, ConsoleInputReturnType.String);
-                Config.Authentication.Config.Instance.Password = password.Encrypt("MjOlNiR2012");
+                password = ConsoleHelper.GetConsoleString("Please enter the password");
+                Config.Authentication.Config.Instance.Password = password.Encrypt(PasswordEncryptionKey);
                 Config.Authentication.Config.Instance.Save();
-            } else
+            }
+            else
             {
-                password = password.Decrypt("MjOlNiR2012");
+                // decrypting password
+                password = password.Decrypt(PasswordEncryptionKey);
             }
 
-            //Console.WriteLine("Select your server");
-            //string server = GetConsoleInput("aRO:iRO:fRO", ConsoleOutputType.List, ConsoleInputReturnType.String);
-
-            _buffer = new Net.RoNetBuffer();
-            Thread connecthread = new Thread(Connect);
-            connecthread.Start();
-            Thread parseThread = new Thread(Parse);
-            parseThread.Start();
-
+            // creating login packet and enqueue so it will get sent once we are connected
+            // might change this later to support password_encrypt from clientinfo.xml
             _packetQueue = new Queue<Net.Protocol.Methods.IMethodOut>();
             _packetQueue.Enqueue(Net.Protocol.Methods.CA.Login.CreateBuilder()
                 .SetVersion(20)
@@ -54,58 +106,45 @@ namespace Mjolnir
                 .SetClienttype(Static.ClientType.CLIENTTYPE_FRANCE)
                 .Build());
 
-            while (1 == 1)
-            {
-                string command = Console.ReadLine();
-                switch (command)
-                {
-                    case "relog":
-                        _buffer = new Net.RoNetBuffer();
-                        connecthread = new Thread(Connect);
-                        connecthread.Start();
-                        parseThread = new Thread(Parse);
-                        parseThread.Start();
+            // creating the buffer for the ragnarok packets
+            _buffer = new Net.RoNetBuffer();
 
-                        _packetQueue = new Queue<Net.Protocol.Methods.IMethodOut>();
-                        _packetQueue.Enqueue(Net.Protocol.Methods.CA.Login.CreateBuilder()
-                            .SetVersion(20)
-                            .SetId(username.ToCharArray())
-                            .SetPasswd(password.ToCharArray())
-                            .SetClienttype(Static.ClientType.CLIENTTYPE_FRANCE)
-                            .Build());
-                        break;
-
-                }
-            }
+            // start connection
+            _connectThread = new Thread(Connect);
+            _connectThread.Start();
         }
 
-        private static void Parse()
+        private static void Relog(int seconds = 5)
         {
-            while (1 == 1)
+            Logging.Trace("Relogging in {0} seconds", Logging.LogLevel.Info, seconds);
+            if (_socket != null) _socket.Close();
+            Thread.Sleep(seconds * 1000);
+
+            StartConnect();
+        }
+
+        // packet parsing
+        private static void ParsePackets()
+        {
+            while (_socket.Connected)
             {
                 while (_buffer.PacketAvaliable())
                 {
                     var x = _buffer.GetPacketHeader();
                     if (x.Size == -2)
-                        Console.Write("Header " + x.MethodId.ToString().PadLeft(5, Convert.ToChar(" ")) + ", 0x" + ((uint)x.MethodId).ToString("x4") + " ");
+                    {
+                        Logging.Trace("Unknown Packet received 0x{0:x4} ({0})", Logging.LogLevel.Error, x.MethodId);
+                        _buffer.Clear();
+                        break;
+                    }
 
                     var d = _buffer.GetPacketData((int)x.Size);
                     var m = Net.Protocol.Methods.Method.GetByID(x.MethodId);
 
-                    if (m == null)
+                    if (m != null)
                     {
-                        Console.ForegroundColor = ConsoleColor.DarkRed;
-                        Console.WriteLine("unknown!");
-                        Console.ResetColor();
-                    }
-                    else
-                    {
-                        Console.ForegroundColor = ConsoleColor.DarkGreen;
-                        Console.Write("parsed ");
-                        Console.ForegroundColor = ConsoleColor.Cyan;
-                        Console.WriteLine(m.GetType().Name);
-                        Console.ResetColor();
-                        Console.WriteLine(d.Hexdump());
+                        Logging.Trace(m.GetType().Name, Logging.LogLevel.Debug);
+                        Logging.Trace(d.Hexdump(), Logging.LogLevel.Debug);
                         m.Parse(x, d);
                     }
                     _buffer.Consume();
@@ -126,7 +165,7 @@ namespace Mjolnir
                         using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
                         {
                             p.WriteTo(bw);
-                            Console.WriteLine(ms.ToArray().Hexdump());
+                            Logging.Trace(ms.ToArray().Hexdump(), Logging.LogLevel.Debug);
                             _socket.Send(ms.ToArray());
                         }
                     }
@@ -145,37 +184,31 @@ namespace Mjolnir
                 _socket = new System.Net.Sockets.Socket(System.Net.Sockets.AddressFamily.InterNetwork, System.Net.Sockets.SocketType.Stream, System.Net.Sockets.ProtocolType.Tcp);
                 try
                 {
-                    Console.WriteLine("Connecting to {0}:{1}", Config.Server.Config.Instance.IP, Config.Server.Config.Instance.Port);
-                    _socket.Connect(Config.Server.Config.Instance.IP, Config.Server.Config.Instance.Port);
+                    Logging.Trace("Connecting to {0}:{1}", Logging.LogLevel.Info, _currentService.IP, _currentService.Port);
+                    _socket.Connect(_currentService.IP, _currentService.Port);
                 }
                 catch
                 {
-
+                    Logging.Trace("Could not connect to server. Type 'relog' to reconnect.", Logging.LogLevel.Error);
                     return;
                 }
+                Logging.Trace("Connected.", Logging.LogLevel.Debug);
 
                 Thread senderThread = new Thread(Sending);
                 senderThread.Start();
-                //m_ClientDisconnected = false;
+
+                Thread parseThread = new Thread(ParsePackets);
+                parseThread.Start();
 
                 do
                 {
                     while (_socket.Available == 0)
-                    {
-                        //if (m_ClientDisconnected)
-                        //return;
-                        //if (g_EvtStop.WaitOne(100))
-                        //return;
-                        //if (m_ClosedConnection.WaitOne(100))
-                        //return;
                         Thread.Sleep(0);
-                    }
+
                     recvBytes = _socket.Receive(byteRecv, System.Net.Sockets.SocketFlags.None);
 
                     if (recvBytes == 0)
-                    {
                         break;
-                    }
 
                     _buffer.Append(byteRecv, recvBytes);
 
@@ -187,76 +220,6 @@ namespace Mjolnir
             finally
             {
             }
-
-        }
-
-
-        enum ConsoleInputReturnType
-        {
-            String,
-            Char
-        }
-
-        enum ConsoleOutputType
-        {
-            Message,
-            List
-        }
-
-        static string GetConsoleInput(string message, ConsoleOutputType outputType, ConsoleInputReturnType returnType)
-        {
-            Dictionary<int, string> optionList = new Dictionary<int, string>();
-            switch (outputType)
-            {
-                case ConsoleOutputType.Message:
-                    Console.WriteLine(message);
-                    break;
-
-                case ConsoleOutputType.List:
-                    int index = 0;
-                    foreach (string option in message.Split(Convert.ToChar(":")))
-                    {
-                        optionList.Add(index, option);
-                        Console.WriteLine("{0}. {1}", index, option);
-                        index++;
-                    }
-                    break;
-            }
-
-            switch (returnType)
-            {
-                case ConsoleInputReturnType.String:
-                    {
-                        var input = Console.ReadLine();
-                        return input;
-                    }
-
-                case ConsoleInputReturnType.Char:
-                    {
-                        string input = Console.ReadKey().ToString();
-                        if (outputType == ConsoleOutputType.List)
-                        {
-                            int selectedIndex = -1;
-                            if (int.TryParse(input, out selectedIndex))
-                            {
-                                if (optionList.ContainsKey(selectedIndex))
-                                {
-                                    return optionList[selectedIndex];
-                                }
-                                else
-                                {
-                                    Console.WriteLine("Invalid selection");
-                                }
-                            }
-                            else
-                            {
-                                Console.WriteLine("Invalid selection");
-                            }
-                        }
-                        return input;
-                    }
-            }
-            return string.Empty;
         }
     }
 }

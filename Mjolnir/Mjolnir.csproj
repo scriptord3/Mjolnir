@@ -50,13 +50,16 @@
     <Compile Include="Config\Authentication\Config.cs" />
     <Compile Include="Config\Config.cs" />
     <Compile Include="Config\ConfigurationManager.cs" />
-    <Compile Include="Config\Server\Config.cs" />
+    <Compile Include="Config\Service\Config.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="app.config" />
     <None Include="config.ini">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Data\servers.ini">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

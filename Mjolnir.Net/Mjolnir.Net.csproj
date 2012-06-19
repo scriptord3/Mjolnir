@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="Protocol\Header.cs" />
     <Compile Include="Protocol\Methods\AC\Accept_Login.cs" />
+    <Compile Include="Protocol\Methods\AC\Refuse_Login.cs" />
     <Compile Include="Protocol\Methods\CA\Login.cs" />
     <Compile Include="Protocol\Methods\CC\ReplayPacket.cs" />
     <Compile Include="Protocol\Methods\IMethod.cs" />

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using Mjolnir.Static;
 
 namespace Mjolnir.Net.Protocol.Methods.SC
 {
@@ -13,7 +14,8 @@ namespace Mjolnir.Net.Protocol.Methods.SC
             switch ((Mjolnir.Static.NotifyErrorResult)data[0])
             {
                 case Mjolnir.Static.NotifyErrorResult.BAN_INFORMATION_REMAINED:
-                    Console.WriteLine("The server still recognizes your old login");
+                    
+                    Logging.Trace("The server still recognizes your old login", Logging.LogLevel.Warning);
                     break;
             }
         }

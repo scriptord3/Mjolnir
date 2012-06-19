@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Mjolnir.Static.Extensions;
+using Mjolnir.Static;
 
 namespace Mjolnir.Net.Protocol.Methods.AC
 {
@@ -40,14 +41,19 @@ namespace Mjolnir.Net.Protocol.Methods.AC
                     _lastLoginTime = br.ReadBytes(26);
                     _sex = br.ReadByte();
 
+                    Dictionary<string, Server> serverList = new Dictionary<string, Server>();
                     for (int i = (int)ms.Position; i < header.Size; i += 32)
                     {
-                        string ip = string.Format("{0}.{1}.{2}.{3}", br.ReadByte(), br.ReadByte(), br.ReadByte(), br.ReadByte());
-                        int port = br.ReadInt16();
-                        string name = br.ReadBytes(22).NullByteTerminatedString();
-                        int type = br.ReadInt16();
-                        int cnt = br.ReadInt16();
+                        Server s = new Server();
+                        s.IP = string.Format("{0}.{1}.{2}.{3}", br.ReadByte(), br.ReadByte(), br.ReadByte(), br.ReadByte());
+                        s.Port = br.ReadInt16();
+                        s.Name = br.ReadBytes(22).NullByteTerminatedString();
+                        s.Type = br.ReadInt16();
+                        s.UserCount = br.ReadInt16();
+                        serverList.Add(s.Name, s);
                     }
+                    Server res = ConsoleHelper.GetConsoleMenu<Server>("Select your Server", serverList);
+                    Logging.Trace("Selected {0}", Logging.LogLevel.Warning, res.Name);
                 }
             }
         }

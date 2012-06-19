@@ -42,13 +42,13 @@ namespace Mjolnir.Static.Extensions
         {
             StringBuilder b = new StringBuilder();
             b.AppendLine();
-            AppendLine(b, "[0x" + buffer.Length.ToString("X8") + "] {");
+            AppendLine(b, "[0x" + buffer.Length.ToString("X8") + "] {{");
 
             int length = Math.Min(buffer.Length, 0xFFFF);
             for (int i = 0; i < length; i += 16)
             {
 
-                b.AppendFormat("{0:X4}  ", i);
+                b.AppendFormat("  {0:X4}  ", i);
                 for (int n = 0; n < 8; n++)
                 {
                     int o = i + n;
@@ -87,7 +87,7 @@ namespace Mjolnir.Static.Extensions
                 }
                 b.AppendLine();
             }
-            AppendLine(b, "}");
+            AppendLine(b, "}}");
             return b.ToString();
         }
     }

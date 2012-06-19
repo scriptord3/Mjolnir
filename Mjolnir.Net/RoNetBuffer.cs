@@ -65,6 +65,12 @@ namespace Mjolnir.Net
             Position = 0;
         }
 
+        public void Clear()
+        {
+            Position = _length;
+            Consume();
+        }
+
         public void Append(byte[] newdata)
         {
             if (_data.Length < _length + newdata.Length)

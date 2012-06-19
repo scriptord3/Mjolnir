@@ -7,8 +7,7 @@ namespace Mjolnir.Config.Server
 {
     public sealed class Config : Mjolnir.Config.Config
     {
-        public string IP { get { return this.GetString("IP", String.Empty); } set { this.Set("IP", value); } }
-        public int Port { get { return this.GetInt("Port", 0); } set { this.Set("Port", value); } }
+        public string Name { get { return this.GetString("Name", string.Empty); } set { this.Set("Name", value); } }
 
         private static readonly Config _instance = new Config();
         public static Config Instance { get { return _instance; } }
