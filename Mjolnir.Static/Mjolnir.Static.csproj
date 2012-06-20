@@ -42,7 +42,7 @@
   <ItemGroup>
     <Compile Include="ConsoleHelper.cs" />
     <Compile Include="Extensions\ByteArrayExtensions.cs" />
-    <Compile Include="Data.cs" />
+    <Compile Include="Enum.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Logging.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

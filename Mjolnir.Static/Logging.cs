@@ -30,7 +30,7 @@ namespace Mjolnir.Static
                     break;
 
                 case LogLevel.Input:
-                    Console.ForegroundColor = ConsoleColor.Blue;
+                    Console.ForegroundColor = ConsoleColor.Cyan;
                     break;
 
                 case LogLevel.Info:

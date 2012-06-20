@@ -47,7 +47,7 @@
     <Compile Include="Protocol\Methods\CC\ReplayPacket.cs" />
     <Compile Include="Protocol\Methods\IMethod.cs" />
     <Compile Include="Protocol\Methods\Method.cs" />
-    <Compile Include="Protocol\Methods\SC\Notify_Error.cs" />
+    <Compile Include="Protocol\Methods\SC\Notify_Ban.cs" />
     <Compile Include="Protocol\Methods\ZC\Accept_Enter2.cs" />
     <Compile Include="Protocol\Methods\ZC\Ack_ReqName.cs" />
     <Compile Include="Protocol\Methods\ZC\Ack_ReqNameAll.cs" />

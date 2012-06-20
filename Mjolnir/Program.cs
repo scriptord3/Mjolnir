@@ -22,6 +22,8 @@ namespace Mjolnir
         private static Service _currentService;
         private static Thread _connectThread;
 
+        private static ClientState _clientState;
+
         private const string PasswordEncryptionKey = "MjOlNiR2012";
 
         static void Main(string[] args)
@@ -30,6 +32,12 @@ namespace Mjolnir
 
             while (1 == 1)
             {
+                // loop until we are ingame
+                while (_clientState != ClientState.ConnectedToZoneServer)// || _clientState == ClientState.Disconnected)
+                {
+                    Thread.Sleep(0);
+                }
+
                 string command = Console.ReadLine();
                 switch (command)
                 {
@@ -56,6 +64,7 @@ namespace Mjolnir
                 s.Name = de.Key.ToString();
                 s.IP = section.GetValue("ip");
                 s.Port = Convert.ToInt32(section.GetValue("port"));
+                s.PasswordEncrypt = Convert.ToBoolean(section.GetValue("passwordencrypt"));
                 serviceList.Add(de.Key.ToString(), s);
             }
 
@@ -123,57 +132,6 @@ namespace Mjolnir
             StartConnect();
         }
 
-        // packet parsing
-        private static void ParsePackets()
-        {
-            while (_socket.Connected)
-            {
-                while (_buffer.PacketAvaliable())
-                {
-                    var x = _buffer.GetPacketHeader();
-                    if (x.Size == -2)
-                    {
-                        Logging.Trace("Unknown Packet received 0x{0:x4} ({0})", Logging.LogLevel.Error, x.MethodId);
-                        _buffer.Clear();
-                        break;
-                    }
-
-                    var d = _buffer.GetPacketData((int)x.Size);
-                    var m = Net.Protocol.Methods.Method.GetByID(x.MethodId);
-
-                    if (m != null)
-                    {
-                        Logging.Trace(m.GetType().Name, Logging.LogLevel.Debug);
-                        Logging.Trace(d.Hexdump(), Logging.LogLevel.Debug);
-                        m.Parse(x, d);
-                    }
-                    _buffer.Consume();
-                }
-                Thread.Sleep(0);
-            }
-        }
-
-        private static void Sending()
-        {
-            while (_socket.Connected)
-            {
-                while (_packetQueue.Count > 0)
-                {
-                    Net.Protocol.Methods.IMethodOut p = _packetQueue.Dequeue();
-                    using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
-                    {
-                        using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
-                        {
-                            p.WriteTo(bw);
-                            Logging.Trace(ms.ToArray().Hexdump(), Logging.LogLevel.Debug);
-                            _socket.Send(ms.ToArray());
-                        }
-                    }
-                }
-                Thread.Sleep(0);
-            }
-        }
-
         private static void Connect()
         {
             try
@@ -219,6 +177,80 @@ namespace Mjolnir
             }
             finally
             {
+            }
+        }
+
+        private static void Sending()
+        {
+            while (_socket.Connected)
+            {
+                while (_packetQueue.Count > 0)
+                {
+                    Net.Protocol.Methods.IMethodOut p = _packetQueue.Dequeue();
+                    using (System.IO.MemoryStream ms = new System.IO.MemoryStream())
+                    {
+                        using (System.IO.BinaryWriter bw = new System.IO.BinaryWriter(ms))
+                        {
+                            p.WriteTo(bw);
+                            Logging.Trace(ms.ToArray().Hexdump(), Logging.LogLevel.Debug);
+                            _socket.Send(ms.ToArray());
+                        }
+                    }
+                }
+                Thread.Sleep(0);
+            }
+        }
+
+        // packet parsing
+        private static void ParsePackets()
+        {
+            while (_socket.Connected)
+            {
+                while (_buffer.PacketAvaliable())
+                {
+                    var x = _buffer.GetPacketHeader();
+                    if (x.Size == -2)
+                    {
+                        Logging.Trace("Unknown Packet received 0x{0:x4} ({0})", Logging.LogLevel.Error, x.MethodId);
+                        _buffer.Clear();
+                        break;
+                    }
+
+                    var d = _buffer.GetPacketData((int)x.Size);
+                    var m = Net.Protocol.Methods.Method.GetByID(x.MethodId);
+
+                    if (m != null)
+                    {
+                        Logging.Trace(m.GetType().Name, Logging.LogLevel.Debug);
+                        Logging.Trace(d.Hexdump(), Logging.LogLevel.Debug);
+                        m.Parse(x, d);
+                        switch (x.MethodId)
+                        {
+                            case (uint)PacketHeader.HEADER_SC_NOTIFY_BAN:
+                                {
+                                    Mjolnir.Net.Protocol.Methods.SC.Notify_Ban p = (Mjolnir.Net.Protocol.Methods.SC.Notify_Ban)m;
+                                    switch ((NotifyErrorResult)p.Reason)
+                                    {
+                                        case NotifyErrorResult.BAN_INFORMATION_REMAINED:
+                                            Logging.Trace("The server still recognizes your old login", Logging.LogLevel.Warning);
+                                            Relog(5);
+                                            break;
+                                    }
+                                }
+                                break;
+
+                            case (uint)PacketHeader.HEADER_AC_ACCEPT_LOGIN:
+                                {
+                                    Mjolnir.Net.Protocol.Methods.AC.Accept_Login p = (Mjolnir.Net.Protocol.Methods.AC.Accept_Login)m;
+                                    Server res = ConsoleHelper.GetConsoleMenu<Server>("Select your Server", p.ServerList);
+                                    Logging.Trace("Selected {0}", Logging.LogLevel.Warning, res.Name);
+                                }
+                                break;
+                        }
+                    }
+                    _buffer.Consume();
+                }
+                Thread.Sleep(0);
             }
         }
     }

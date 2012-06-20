@@ -7,7 +7,7 @@ using Mjolnir.Static;
 
 namespace Mjolnir.Net.Protocol.Methods.AC
 {
-    [Method(methodId: 0x0069, size: MethodAttribute.packet_length_dynamic, name: "AC_ACCEPT_LOGIN", direction: MethodAttribute.packetdirection.pd_in)]
+    [Method(methodId: (uint)PacketHeader.HEADER_AC_ACCEPT_LOGIN, size: MethodAttribute.packet_length_dynamic, name: "AC_ACCEPT_LOGIN", direction: MethodAttribute.packetdirection.pd_in)]
     public class Accept_Login : IMethodIn
     {
         private int _authCode;
@@ -28,6 +28,9 @@ namespace Mjolnir.Net.Protocol.Methods.AC
         private byte _sex;
         public byte Sex { get { return _sex; } }
 
+        private Dictionary<string, Server> _serverList;
+        public Dictionary<string, Server> ServerList { get { return _serverList; } }
+
         public void Parse(Header header, byte[] data)
         {
             using (System.IO.MemoryStream ms = new System.IO.MemoryStream(data))
@@ -41,7 +44,7 @@ namespace Mjolnir.Net.Protocol.Methods.AC
                     _lastLoginTime = br.ReadBytes(26);
                     _sex = br.ReadByte();
 
-                    Dictionary<string, Server> serverList = new Dictionary<string, Server>();
+                    _serverList = new Dictionary<string, Server>();
                     for (int i = (int)ms.Position; i < header.Size; i += 32)
                     {
                         Server s = new Server();
@@ -50,10 +53,8 @@ namespace Mjolnir.Net.Protocol.Methods.AC
                         s.Name = br.ReadBytes(22).NullByteTerminatedString();
                         s.Type = br.ReadInt16();
                         s.UserCount = br.ReadInt16();
-                        serverList.Add(s.Name, s);
+                        _serverList.Add(s.Name, s);
                     }
-                    Server res = ConsoleHelper.GetConsoleMenu<Server>("Select your Server", serverList);
-                    Logging.Trace("Selected {0}", Logging.LogLevel.Warning, res.Name);
                 }
             }
         }
